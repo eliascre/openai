@@ -26,18 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build app
-        env:
-          BASE_PATH: /${{ github.event.repository.name }}/
-        run: npm run build
+      - name: Build app with Docker
+        run: |
+          docker build \
+            --target export-dist \
+            --build-arg BASE_PATH=/${{ github.event.repository.name }}/ \
+            --output type=local,dest=./dist \
+            .
 
       - name: Upload artifact
         if: github.event_name != 'pull_request'
